@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SomniTech Logout</title>
+  <style>
+    :root {
+      --bg: #060e23;
+      --bg-2: #0a1b3f;
+      --panel: rgba(32, 40, 59, 0.86);
+      --accent: #00d9ff;
+      --text: #e3f7ff;
+      --muted: #89a0bf;
+      --border: rgba(27, 212, 255, 0.34);
+      --danger: #ff2e8f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% -20%, #204584 0%, var(--bg) 45%),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
+      padding: 16px;
+    }
+    .logout-card {
+      width: min(460px, 96%);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 0 0 1px rgba(0, 217, 255, 0.08), 0 0 24px rgba(0, 217, 255, 0.2);
+    }
+    h1 { margin: 0; color: var(--accent); }
+    p { color: var(--muted); margin: 10px 0 18px; }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    button, a {
+      border-radius: 999px;
+      border: 1px solid transparent;
+      padding: 10px 16px;
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: 0.03rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-size: 0.86rem;
+    }
+    .btn-cancel {
+      border-color: var(--border);
+      color: var(--accent);
+      background: transparent;
+    }
+    .btn-logout {
+      background: rgba(255, 46, 143, 0.15);
+      border-color: rgba(255, 46, 143, 0.55);
+      color: #ff9fcc;
+    }
+  </style>
+</head>
+<body>
+  <section class="logout-card">
+    <h1>Logout</h1>
+    <p>Do you want to sign out of SomniTech?</p>
+    <div class="btn-row">
+      <a class="btn-cancel" href="index.html">Cancel</a>
+      <button id="confirmLogoutBtn" class="btn-logout" type="button">Confirm Logout</button>
+    </div>
+  </section>
+
+  <script>
+    const AUTH_KEY = "somnitechAuth";
+    document.getElementById("confirmLogoutBtn").addEventListener("click", () => {
+      try {
+        localStorage.removeItem(AUTH_KEY);
+      } catch (error) {
+        // ignore storage errors during logout
+      }
+      window.location.href = "login.html";
+    });
+  </script>
+</body>
+</html>

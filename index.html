@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SomniTech - Health Monitoring Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">SOMNITECH</div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html">Dashboard</a>
+      <a href="#chartsSection">Analytics</a>
+      <a href="#reportSection">Reports</a>
+      <a href="about.html">About</a>
+      <a href="logout.html">Logout</a>
+    </nav>
+    <div id="welcomeUser" class="welcome-user">Welcome, User</div>
+    <button id="themeToggleBtn" class="theme-icon-btn" aria-label="Toggle theme">◐</button>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>HEALTH MONITORING DASHBOARD</h1>
+      <div class="hero-divider"></div>
+      <div class="button-row hero-buttons">
+        <button id="startBtn" class="btn btn-start">▶ Start Monitoring</button>
+        <button id="stopBtn" class="btn btn-stop">■ Stop Monitoring</button>
+      </div>
+      <div id="monitorStatus" class="status stopped">Monitoring Stopped 🔴</div>
+    </section>
+
+    <section class="panel sensor-panel">
+      <h2>Enter Sensor Data</h2>
+      <div class="sensor-grid">
+        <label>Heart Rate (bpm)
+          <input id="inputHeartRate" type="range" min="50" max="120" value="70" />
+          <span id="inputHeartRateValue">70</span>
+        </label>
+        <label>HRV (ms)
+          <input id="inputHrv" type="range" min="20" max="110" value="50" />
+          <span id="inputHrvValue">50</span>
+        </label>
+        <label>SpO₂ (%)
+          <input id="inputSpo2" type="range" min="90" max="100" value="98" />
+          <span id="inputSpo2Value">98</span>
+        </label>
+        <label>Temperature (°C)
+          <input id="inputTemp" type="range" min="35" max="39" step="0.1" value="37" />
+          <span id="inputTempValue">37.0</span>
+        </label>
+      </div>
+      <div class="button-row">
+        <button id="addReadingBtn" class="btn btn-outline">+ Add Reading</button>
+        <button id="generateRandomBtn" class="btn btn-outline">↻ Generate Random Data</button>
+      </div>
+    </section>
+
+    <section class="panel quick-stats">
+      <article class="stat-box">
+        <h3>Health Status</h3>
+        <p id="healthStatusValue">Safe</p>
+      </article>
+      <article class="stat-box">
+        <h3>Sleep Score</h3>
+        <p><span id="sleepScoreValue">--</span>%</p>
+      </article>
+      <article class="stat-box">
+        <h3>Heart Rate</h3>
+        <p><span id="heartRateValue">--</span> bpm</p>
+      </article>
+      <article class="stat-box">
+        <h3>SpO₂</h3>
+        <p><span id="spo2Value">--</span>%</p>
+      </article>
+    </section>
+
+    <section id="chartsSection" class="panel charts">
+      <div class="history-header">
+        <h2>Combined Health Metrics</h2>
+        <select id="timeFilterSelect" class="filter-select">
+          <option value="all">All Data</option>
+          <option value="24h">Last 24 Hours</option>
+          <option value="1h">Last 1 Hour</option>
+        </select>
+      </div>
+      <div class="chart-legend">
+        <span class="legend-item"><i class="legend-dot heart-rate"></i>Heart Rate</span>
+        <span class="legend-item"><i class="legend-dot spo2"></i>SpO₂</span>
+        <span class="legend-item"><i class="legend-dot hrv"></i>HRV</span>
+        <span class="legend-item"><i class="legend-dot sleep-score"></i>Sleep Score</span>
+      </div>
+      <canvas id="combinedTrendChart" width="940" height="320"></canvas>
+    </section>
+
+    <section class="mini-chart-grid">
+      <article class="panel mini-card">
+        <h3>Heart Rate Trend</h3>
+        <canvas id="heartMiniChart" width="280" height="170"></canvas>
+      </article>
+      <article class="panel mini-card">
+        <h3>SpO₂ Levels</h3>
+        <canvas id="spo2MiniChart" width="280" height="170"></canvas>
+      </article>
+      <article class="panel mini-card">
+        <h3>Sleep Score</h3>
+        <canvas id="sleepMiniChart" width="280" height="170"></canvas>
+      </article>
+    </section>
+
+    <section class="panel history">
+      <div class="history-header">
+        <h2>Latest Readings</h2>
+        <div class="history-actions">
+          <button id="exportCsvBtn" class="btn btn-outline">Export CSV</button>
+          <button id="clearHistoryBtn" class="btn btn-outline danger">Clear History</button>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Heart Rate</th>
+              <th>HRV</th>
+              <th>SpO₂</th>
+              <th>Temperature</th>
+              <th>Sleep Score</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="reportSection" class="panel report-share">
+      <h2>SHARE YOUR HEALTH REPORT</h2>
+      <div class="report-grid">
+        <article class="report-card">
+          <h3>Share with Caretaker</h3>
+          <input id="caretakerEmailInput" type="email" placeholder="caregiver@example.com" />
+          <button id="sendCaretakerBtn" class="btn btn-outline">Send Report</button>
+        </article>
+        <article class="report-card">
+          <h3>Share with Doctor</h3>
+          <input id="doctorEmailInput" type="email" placeholder="doctor@hospital.com" />
+          <button id="sendDoctorBtn" class="btn btn-outline">Send Report</button>
+        </article>
+        <article class="report-card">
+          <h3>Download Report</h3>
+          <p>Generate and download your complete health report as PDF.</p>
+          <button id="downloadPdfBtn" class="btn btn-start">Download PDF</button>
+        </article>
+      </div>
+      <p id="reportStatusMessage" class="report-status"></p>
+    </section>
+
+    <section class="sr-only">
+      <span id="tempValue">--</span>
+      <span id="hrvValue">--</span>
+      <span id="avgHeartRateValue">--</span>
+      <span id="avgSpo2Value">--</span>
+      <span id="avgTempValue">--</span>
+      <span id="bestSleepScoreValue">--</span>
+      <span id="lastUpdatedValue">--</span>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

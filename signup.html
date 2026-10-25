@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SomniTech Sign Up</title>
+  <style>
+    :root {
+      --bg: #060e23;
+      --bg-2: #0a1b3f;
+      --panel: rgba(32, 40, 59, 0.86);
+      --accent: #00d9ff;
+      --text: #e3f7ff;
+      --muted: #89a0bf;
+      --border: rgba(27, 212, 255, 0.34);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% -20%, #204584 0%, var(--bg) 45%),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
+      padding: 16px;
+    }
+    .card {
+      width: min(500px, 96%);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 0 0 1px rgba(0, 217, 255, 0.08), 0 0 24px rgba(0, 217, 255, 0.2);
+    }
+    h1 {
+      margin: 0;
+      color: var(--accent);
+      letter-spacing: 0.08rem;
+      text-align: center;
+    }
+    p {
+      margin: 10px 0 18px;
+      text-align: center;
+      color: var(--muted);
+    }
+    form {
+      display: grid;
+      gap: 14px;
+    }
+    label {
+      display: grid;
+      gap: 8px;
+      font-size: 0.88rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    input {
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      padding: 12px 14px;
+      outline: none;
+    }
+    button {
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(90deg, #1dd8ff, #00a2ff);
+      color: #03203e;
+      font-weight: 800;
+      padding: 12px 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.04rem;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    .error {
+      min-height: 24px;
+      color: #ff95bf;
+      font-size: 0.86rem;
+      text-align: center;
+    }
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .footer-note a {
+      color: #1dd8ff;
+      text-decoration: none;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <section class="card">
+    <h1>Create Your Account</h1>
+    <p>Register to access the SomniTech health monitoring dashboard.</p>
+    <form id="signupForm">
+      <label>
+        Username
+        <input id="username" type="text" placeholder="Choose a username" required />
+      </label>
+      <label>
+        Email
+        <input id="email" type="email" placeholder="you@example.com" required />
+      </label>
+      <label>
+        Password
+        <input id="password" type="password" placeholder="Create a password" required />
+      </label>
+      <label>
+        Confirm Password
+        <input id="confirmPassword" type="password" placeholder="Re-enter your password" required />
+      </label>
+      <div id="signupError" class="error"></div>
+      <button type="submit">Sign Up</button>
+      <div class="footer-note">
+        Already registered? <a href="login.html">Login here</a>
+      </div>
+    </form>
+  </section>
+
+  <script>
+    const AUTH_KEY = "somnitechAuth";
+    const USERS_KEY = "somnitechUsers";
+    const form = document.getElementById("signupForm");
+    const errorEl = document.getElementById("signupError");
+    const usernameEl = document.getElementById("username");
+    const emailEl = document.getElementById("email");
+    const passwordEl = document.getElementById("password");
+    const confirmEl = document.getElementById("confirmPassword");
+
+    try {
+      const saved = localStorage.getItem(AUTH_KEY);
+      if (saved) {
+        const auth = JSON.parse(saved);
+        if (auth && auth.loggedIn) window.location.href = "index.html";
+      }
+    } catch (error) {
+      // ignore
+    }
+
+    function loadUsers() {
+      try {
+        return JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      errorEl.textContent = "";
+
+      const username = usernameEl.value.trim();
+      const email = emailEl.value.trim();
+      const password = passwordEl.value.trim();
+      const confirmPassword = confirmEl.value.trim();
+
+      if (!username || !email || !password || !confirmPassword) {
+        errorEl.textContent = "Please fill out all fields.";
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        errorEl.textContent = "Passwords do not match.";
+        return;
+      }
+
+      const users = loadUsers();
+      if (users.some((user) => user.username.toLowerCase() === username.toLowerCase())) {
+        errorEl.textContent = "Username already exists. Please choose another.";
+        return;
+      }
+
+      const newUser = {
+        username,
+        email,
+        password,
+        createdAt: new Date().toISOString()
+      };
+      users.push(newUser);
+      saveUsers(users);
+
+      localStorage.setItem(AUTH_KEY, JSON.stringify({
+        loggedIn: true,
+        username,
+        loginAt: new Date().toISOString(),
+        remember: true
+      }));
+
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>

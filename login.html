@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SomniTech Login</title>
+  <style>
+    :root {
+      --bg: #060e23;
+      --bg-2: #0a1b3f;
+      --panel: rgba(32, 40, 59, 0.86);
+      --accent: #00d9ff;
+      --text: #e3f7ff;
+      --muted: #89a0bf;
+      --border: rgba(27, 212, 255, 0.34);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% -20%, #204584 0%, var(--bg) 45%),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
+      padding: 16px;
+    }
+    .login-card {
+      width: min(460px, 96%);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 0 0 1px rgba(0, 217, 255, 0.08), 0 0 24px rgba(0, 217, 255, 0.2);
+    }
+    h1 {
+      margin: 0;
+      color: var(--accent);
+      letter-spacing: 0.08rem;
+      text-align: center;
+    }
+    p {
+      margin: 8px 0 18px;
+      text-align: center;
+      color: var(--muted);
+    }
+    form {
+      display: grid;
+      gap: 12px;
+    }
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 0.88rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    input {
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      padding: 11px 12px;
+      outline: none;
+    }
+    .remember-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+    .remember-row input {
+      width: 16px;
+      height: 16px;
+    }
+    button {
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(90deg, #1dd8ff, #00a2ff);
+      color: #03203e;
+      font-weight: 800;
+      padding: 11px 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.04rem;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    .error {
+      min-height: 20px;
+      color: #ff95bf;
+      font-size: 0.86rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <section class="login-card">
+    <h1>SOMNITECH</h1>
+    <p>Sign in to access your health monitoring dashboard</p>
+    <form id="loginForm">
+      <label>
+        Username
+        <input id="username" type="text" placeholder="Enter username" required />
+      </label>
+      <label>
+        Password
+        <input id="password" type="password" placeholder="Enter password" required />
+      </label>
+      <label class="remember-row">
+        <input id="rememberMe" type="checkbox" />
+        Keep me signed in
+      </label>
+      <div id="loginError" class="error"></div>
+      <button type="submit">Login</button>
+      <p style="text-align:center; margin-top:18px; color: var(--muted);">
+        Don’t have an account? <a href="signup.html" style="color: #1dd8ff; text-decoration: none; font-weight: 700;">Sign up</a>
+      </p>
+    </form>
+  </section>
+
+  <script>
+    const AUTH_KEY = "somnitechAuth";
+    const USERS_KEY = "somnitechUsers";
+    const form = document.getElementById("loginForm");
+    const errorEl = document.getElementById("loginError");
+    const usernameEl = document.getElementById("username");
+    const passwordEl = document.getElementById("password");
+    const rememberEl = document.getElementById("rememberMe");
+
+    try {
+      const saved = localStorage.getItem(AUTH_KEY);
+      if (saved) {
+        const auth = JSON.parse(saved);
+        if (auth && auth.loggedIn) window.location.href = "index.html";
+      }
+    } catch (error) {
+      // Ignore parse issues and continue to login form.
+    }
+
+    function loadUsers() {
+      try {
+        return JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
+      } catch (error) {
+        return [];
+      }
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      errorEl.textContent = "";
+      const username = usernameEl.value.trim();
+      const password = passwordEl.value.trim();
+
+      if (!username || !password) {
+        errorEl.textContent = "Please enter username and password.";
+        return;
+      }
+
+      const users = loadUsers();
+      const existingUser = users.find((user) => user.username === username);
+
+      if (users.length > 0 && (!existingUser || existingUser.password !== password)) {
+        errorEl.textContent = "Invalid username or password. Please sign up or try again.";
+        return;
+      }
+
+      const payload = {
+        loggedIn: true,
+        username,
+        loginAt: new Date().toISOString(),
+        remember: rememberEl.checked
+      };
+
+      localStorage.setItem(AUTH_KEY, JSON.stringify(payload));
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>
